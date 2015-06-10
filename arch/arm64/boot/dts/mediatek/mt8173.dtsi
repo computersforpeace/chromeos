@@ -620,6 +620,16 @@
 			mediatek,apmixedsys = <&apmixedsys>;
 		};
 
+		nor_flash: nor@1100d000 {
+			compatible = "mediatek,mt8173-nor";
+			reg = <0 0x1100d000 0 0xe0>;
+			clocks = <&pericfg CLK_PERI_SPI>,
+				 <&topckgen CLK_TOP_AXI_SEL>,
+				 <&topckgen CLK_TOP_UNIVPLL2_D8>,
+				 <&topckgen CLK_TOP_SPINFI_IFR_SEL>;
+			clock-names = "spi_clk", "axi_clk", "mux_clk", "sf_clk";
+		};
+
 		i2c3: i2c3@11010000 {
 			compatible = "mediatek,mt8173-i2c";
 			reg = <0 0x11010000 0 0x70>,
