@@ -267,6 +267,20 @@
 
 &i2c3 {
 	status = "okay";
+
+	anx7816@72 {
+		compatible = "analogix,anx7816";
+		status = "ok";
+		reg = <0x72>;
+		analogix,p-dwn-gpio = <&pio 33 GPIO_ACTIVE_HIGH>;
+		analogix,reset-gpio = <&pio 98 GPIO_ACTIVE_HIGH>;
+		analogix,v10-ctrl-gpio = <&pio 35 GPIO_ACTIVE_HIGH>;
+		analogix,cbl-det-gpio = <&pio 36 GPIO_ACTIVE_HIGH>;
+		analogix,external-ldo-control = <1>;
+		analogix,i2c-pull-up = <1>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&anx7816_pins>;
+	};
 };
 
 &i2c4 {
@@ -360,6 +374,14 @@
 };
 
 &pio {
+	anx7816_pins: anx7816_pins {
+		pins1 {
+			pinmux = <MT8173_PIN_33_DAICLK__FUNC_GPIO33>,
+				 <MT8173_PIN_35_DAIPCMOUT__FUNC_GPIO35>,
+				 <MT8173_PIN_36_DAISYNC__FUNC_GPIO36>;
+		};
+	};
+
 	aud_i2s2: aud_i2s2 {
 		pins1 {
 			pinmux = <MT8173_PIN_128_I2S0_LRCK__FUNC_I2S1_WS>,
