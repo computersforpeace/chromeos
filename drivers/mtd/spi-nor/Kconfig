@@ -40,4 +40,9 @@ config SPI_NXP_SPIFI
 	  Flash. Enable this option if you have a device with a SPIFI
 	  controller and want to access the Flash as a mtd device.
 
+config MTD_MT81xx_NOR
+	tristate "Support SPI flash Controller MTD_MT81xx_NOR"
+	help
+	  This enables access to SPI Nor flash, using MTD_MT81XX_NOR controller.
+
 endif # MTD_SPI_NOR
