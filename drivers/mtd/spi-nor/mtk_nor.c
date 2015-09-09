@@ -110,7 +110,6 @@
 #define LOCAL_BUF_SIZE		(SFLASH_MAX_DMA_SIZE * 20)
 
 struct mt8173_nor {
-	struct mtd_info mtd;
 	struct spi_nor nor;
 	struct device *dev;
 	void __iomem *base;	/* nor flash base address */
@@ -292,7 +291,7 @@ static int mt8173_nor_read(struct spi_nor *nor, loff_t from, size_t len,
 static int mt8173_nor_write_single_byte(struct mt8173_nor *mt8173_nor,
 					int u4addr, u8 u1data)
 {
-	if (u4addr >= mt8173_nor->mtd.size) {
+	if (u4addr >= mt8173_nor->nor.mtd.size) {
 		dev_err(mt8173_nor->dev, "invalid write address!\n");
 		return -EINVAL;
 	}
@@ -413,11 +412,9 @@ static int __init mtk_nor_init(struct mt8173_nor *mt8173_nor,
 
 	writel(MTK_NOR_ENABLE_SF_CMD, mt8173_nor->base + MTK_NOR_WRPROT_REG);
 	nor = &mt8173_nor->nor;
-	mtd = &mt8173_nor->mtd;
-	nor->mtd = mtd;
+	mtd = &nor->mtd;
 	nor->dev = mt8173_nor->dev;
 	nor->priv = mt8173_nor;
-	mtd->priv = nor;
 
 	/* fill the hooks to spi nor */
 	nor->read = mt8173_nor_read;
@@ -425,8 +422,8 @@ static int __init mtk_nor_init(struct mt8173_nor *mt8173_nor,
 	nor->write = mt8173_nor_write;
 	nor->write_reg = mt8173_nor_write_reg;
 	nor->erase = mt8173_nor_erase_sector;
-	nor->mtd->owner = THIS_MODULE;
-	nor->mtd->name = "mtk_nor";
+	mtd->owner = THIS_MODULE;
+	mtd->name = "mtk_nor";
 	/* initialized with NULL */
 	ret = spi_nor_scan(nor, NULL, SPI_NOR_DUAL);
 	if (ret) {
@@ -434,7 +431,7 @@ static int __init mtk_nor_init(struct mt8173_nor *mt8173_nor,
 		return -EINVAL;
 	}
 	dev_dbg(mt8173_nor->dev, "mtd->size :0x%llx!\n", mtd->size);
-	ret = mtd_device_parse_register(nor->mtd, NULL, &ppdata, NULL, 0);
+	ret = mtd_device_parse_register(mtd, NULL, &ppdata, NULL, 0);
 
 	return ret;
 }
@@ -505,12 +502,13 @@ nor_free:
 static int mtk_nor_drv_remove(struct platform_device *pdev)
 {
 	struct mt8173_nor *mt8173_nor = platform_get_drvdata(pdev);
+	struct spi_nor *nor = &mt8173_nor->nor;
 
 	clk_disable_unprepare(mt8173_nor->spi_clk);
 	clk_disable_unprepare(mt8173_nor->src_axi_clk);
 	clk_disable_unprepare(mt8173_nor->sf_mux_clk);
 	clk_disable_unprepare(mt8173_nor->nor_clk);
-	mtd_device_unregister(&mt8173_nor->mtd);
+	mtd_device_unregister(&nor->mtd);
 	return 0;
 }
 
