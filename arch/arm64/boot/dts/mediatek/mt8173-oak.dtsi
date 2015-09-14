@@ -27,6 +27,32 @@
 		reg = <0 0x40000000 0 0x80000000>;
 	};
 
+	backlight_lcd: backlight_lcd {
+		compatible = "pwm-backlight";
+		pwms = <&pwm0 0 1000000>;
+		brightness-levels = <
+			  0  16  32  48  64  80  96 112
+			128 144 160 176 192 208 224 240
+			255
+		>;
+		default-brightness-level = <9>;
+		power-supply = <&bl_fixed_reg>;
+		enable-gpios = <&pio 95 GPIO_ACTIVE_HIGH>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&disp_pwm0_pins>;
+		status = "okay";
+	};
+
+	bl_fixed_reg: fixedregulator@2 {
+		compatible = "regulator-fixed";
+		regulator-name = "bl_fixed";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+		gpio = <&pio 29 0>;
+	};
+
 	chosen {
 		linux,stdout-path = &uart0;
 	};
@@ -60,6 +86,30 @@
 		};
 	};
 
+	panel: panel {
+		compatible = "innolux,n116bge";
+		power-supply = <&panel_fixed_3v3>;
+		ddc-i2c-bus = <&i2c4>;
+	};
+
+	panel_fixed_3v3: regulator@1 {
+		compatible = "regulator-fixed";
+		regulator-name = "PANEL_3V3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+		gpio = <&pio 41 0>;
+	};
+
+	ps8640_fixed_1v2: regulator@2 {
+		compatible = "regulator-fixed";
+		regulator-name = "PS8640_1V2";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		enable-active-high;
+		gpio = <&pio 30 0>;
+	};
+
 	sdio_fixed_3v3: fixedregulator@0 {
 		compatible = "regulator-fixed";
 		regulator-name = "3V3";
@@ -75,6 +125,11 @@
 		mediatek,platform = <&afe>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&aud_i2s2>;
+	};
+
+	sound-hdmi {
+		compatible = "mediatek,mt8173-hdmi-card";
+		mediatek,platform = <&afe>;
 	};
 
 	spi_gpio0: ec@0 {
@@ -107,6 +162,54 @@
 			};
 		};
 	};
+};
+
+&cpu0 {
+	proc-supply = <&mt6397_vpca15_reg>;
+};
+
+&cpu1 {
+	proc-supply = <&mt6397_vpca15_reg>;
+};
+
+&cpu2 {
+	proc-supply = <&mt6311_vcpu_reg>;
+	sram-supply = <&mt6397_vsramca7_reg>;
+};
+
+&cpu3 {
+	proc-supply = <&mt6311_vcpu_reg>;
+	sram-supply = <&mt6397_vsramca7_reg>;
+};
+
+&dsi {
+	mediatek,width = <1368>;
+	mediatek,height = <768>;
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			reg = <1>;
+
+			dsi_out: endpoint {
+				remote-endpoint = <&ps8640_in>;
+			};
+		};
+	};
+};
+
+&gpu {
+	mfgsys-power-supply = <&mt6397_vgpu_reg>;
+	status = "okay";
+};
+
+&hdmi0 {
+	max_hdisplay = <1920>;
+	max_vdisplay = <1200>;
+	ibias = <0x2e>;
+	flt_n_5v-gpios = <&pio 42 GPIO_ACTIVE_HIGH>;  /* flt_n_5v */
+	status = "okay";
 };
 
 &i2c0 {
@@ -169,6 +272,20 @@
 
 &i2c3 {
 	status = "okay";
+
+	anx7816@72 {
+		compatible = "analogix,anx7816";
+		status = "ok";
+		reg = <0x72>;
+		analogix,p-dwn-gpio = <&pio 33 GPIO_ACTIVE_HIGH>;
+		analogix,reset-gpio = <&pio 98 GPIO_ACTIVE_HIGH>;
+		analogix,v10-ctrl-gpio = <&pio 35 GPIO_ACTIVE_HIGH>;
+		analogix,cbl-det-gpio = <&pio 36 GPIO_ACTIVE_HIGH>;
+		analogix,external-ldo-control = <1>;
+		analogix,i2c-pull-up = <1>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&anx7816_pins>;
+	};
 };
 
 &i2c4 {
@@ -181,6 +298,24 @@
 		reg = <0x15>;
 		vcc-supply = <&mt6397_vgp6_reg>;
 		wakeup-source;
+	};
+
+	ps8640: edp-bridge@18 {
+		compatible = "parade,ps8640";
+		reg = <0x18>;
+		edid_reg = <0x50>;
+		power-gpios = <&pio 116 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&pio 115 GPIO_ACTIVE_HIGH>;
+		mode-sel-gpios = <&pio 92 GPIO_ACTIVE_HIGH>;
+		ps8640-1v2-supply = <&ps8640_fixed_1v2>;
+		ps8640-3v3-supply = <&mt6397_vgp2_reg>;
+		mediatek,panel = <&panel>;
+
+		port {
+			ps8640_in: endpoint {
+				remote-endpoint = <&dsi_out>;
+			};
+		};
 	};
 
 	thermal@4c {
@@ -244,6 +379,14 @@
 };
 
 &pio {
+	anx7816_pins: anx7816_pins {
+		pins1 {
+			pinmux = <MT8173_PIN_33_DAICLK__FUNC_GPIO33>,
+				 <MT8173_PIN_35_DAIPCMOUT__FUNC_GPIO35>,
+				 <MT8173_PIN_36_DAISYNC__FUNC_GPIO36>;
+		};
+	};
+
 	aud_i2s2: aud_i2s2 {
 		pins1 {
 			pinmux = <MT8173_PIN_128_I2S0_LRCK__FUNC_I2S1_WS>,
@@ -259,6 +402,13 @@
 		pins1 {
 			pinmux = <MT8173_PIN_4_EINT4__FUNC_GPIO4>;
 			bias-disable;
+		};
+	};
+
+	disp_pwm0_pins: disp_pwm0_pins {
+		pins1 {
+			pinmux = <MT8173_PIN_87_DISP_PWM0__FUNC_DISP_PWM0>;
+			bias-pull-up;
 		};
 	};
 
@@ -421,6 +571,18 @@
 			bias-pull-up;
 		};
 	};
+
+	usb_pins: usb@0 {
+		pins1 {
+			pinmux = <MT8173_PIN_101_MSDC2_DAT1__FUNC_GPIO101>;
+			output-high;
+			bias-disable;
+		};
+	};
+};
+
+&pwm0 {
+	status = "okay";
 };
 
 &pwrap {
@@ -592,10 +754,9 @@
 			mt6397_vgp2_reg: ldo_vgp2 {
 				regulator-compatible = "ldo_vgp2";
 				regulator-name = "vcamio";
-				regulator-min-microvolt = <1800000>;
-				regulator-max-microvolt = <1800000>;
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-enable-ramp-delay = <218>;
-				regulator-always-on;
 			};
 
 			mt6397_vgp3_reg: ldo_vgp3 {
@@ -644,6 +805,13 @@
 
 &uart0 {
 	status = "okay";
+};
+
+&usb30 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&usb_pins>;
+	vusb33-supply = <&mt6397_vusb_reg>;
+	mediatek,wakeup-src = <1>;
 };
 
 #include "../../../../arm/boot/dts/cros-ec-keyboard.dtsi"

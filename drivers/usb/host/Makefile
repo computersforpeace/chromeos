@@ -15,6 +15,9 @@ fhci-$(CONFIG_FHCI_DEBUG) += fhci-dbg.o
 xhci-hcd-y := xhci.o xhci-mem.o
 xhci-hcd-y += xhci-ring.o xhci-hub.o xhci-dbg.o
 xhci-hcd-y += xhci-trace.o
+ifneq ($(CONFIG_USB_XHCI_MTK), )
+	xhci-hcd-y += xhci-mtk-sch.o
+endif
 
 xhci-plat-hcd-y := xhci-plat.o
 ifneq ($(CONFIG_USB_XHCI_MVEBU), )
@@ -30,6 +33,7 @@ obj-$(CONFIG_PCI)		+= pci-quirks.o
 
 obj-$(CONFIG_USB_XHCI_PCI)	+= xhci-pci.o
 obj-$(CONFIG_USB_XHCI_PLATFORM) += xhci-plat-hcd.o
+obj-$(CONFIG_USB_XHCI_MTK)	+= xhci-mtk.o
 obj-$(CONFIG_USB_XHCI_TEGRA)	+= xhci-tegra.o
 
 obj-$(CONFIG_USB_EHCI_HCD)	+= ehci-hcd.o
