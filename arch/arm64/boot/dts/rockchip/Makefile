@@ -5,7 +5,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-tb-sheep.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-chrome.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-fpga.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-gru-gru.dtb
-dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-gru-kevin.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-kevin.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-monkey.dtb
 
 always		:= $(dtb-y)
