@@ -860,6 +860,11 @@ ap_i2c_audio: &i2c8 {
 /* PINCTRL: always below everything else */
 
 &pinctrl {
+	pcfg_pull_none_drv_8ma: pcfg-pull-none-drv-8ma {
+		bias-disable;
+		drive-strength = <8>;
+	};
+
 	pcfg_output_high: pcfg-output-high {
 		output-high;
 	};
@@ -926,28 +931,27 @@ ap_i2c_audio: &i2c8 {
 
 	sdmmc {
 		/*
-		 * We have external pulls on SDMMC, so diable internals
+		 * We run sdmmc at max speed; bump up drive strength.
+		 * We also have external pulls, so disable the internal ones.
 		 *
-		 * TODO:
-		 * - On veyron we found that we needed to drive at 8mA.  Do we
-		 *   need to that here?  If so, 8mA or 12mA?
+		 * TODO: should this just use 12ma?  That's in the main dts...
 		 */
 		sdmmc_bus4: sdmmc-bus4 {
 			rockchip,pins =
-				<4 8 RK_FUNC_1 &pcfg_pull_none>,
-				<4 9 RK_FUNC_1 &pcfg_pull_none>,
-				<4 10 RK_FUNC_1 &pcfg_pull_none>,
-				<4 11 RK_FUNC_1 &pcfg_pull_none>;
+				<4 8 RK_FUNC_1 &pcfg_pull_none_drv_8ma>,
+				<4 9 RK_FUNC_1 &pcfg_pull_none_drv_8ma>,
+				<4 10 RK_FUNC_1 &pcfg_pull_none_drv_8ma>,
+				<4 11 RK_FUNC_1 &pcfg_pull_none_drv_8ma>;
 		};
 
 		sdmmc_clk: sdmmc-clk {
 			rockchip,pins =
-				<4 12 RK_FUNC_1 &pcfg_pull_none>;
+				<4 12 RK_FUNC_1 &pcfg_pull_none_drv_8ma>;
 		};
 
 		sdmmc_cmd: sdmmc-cmd {
 			rockchip,pins =
-				<4 13 RK_FUNC_1 &pcfg_pull_none>;
+				<4 13 RK_FUNC_1 &pcfg_pull_none_drv_8ma>;
 		};
 
 		/*
