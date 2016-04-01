@@ -506,22 +506,37 @@
 
 &cpu_l1 {
 	cpu-supply = <&ppvar_litcpu>;
+
+	// HACK: Only enable 1 little core even
+	/delete-property/ enable-method;
 };
 
 &cpu_l2 {
 	cpu-supply = <&ppvar_litcpu>;
+
+	// HACK: Only enable 1 little core even
+	/delete-property/ enable-method;
 };
 
 &cpu_l3 {
 	cpu-supply = <&ppvar_litcpu>;
+
+	// HACK: Only enable 1 little core even
+	/delete-property/ enable-method;
 };
 
 &cpu_b0 {
 	cpu-supply = <&ppvar_bigcpu>;
+
+	// HACK: Don't allow big cores to be enabled until we solve problems.
+	/delete-property/ enable-method;
 };
 
 &cpu_b1 {
 	cpu-supply = <&ppvar_bigcpu>;
+
+	// HACK: Don't allow big cores to be enabled until we solve problems.
+	/delete-property/ enable-method;
 };
 
 &emmc_phy {
