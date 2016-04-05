@@ -288,10 +288,10 @@ static const struct component_ops rockchip_dp_component_ops = {
 static int rockchip_dp_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct device_node *panel_node, *port, *endpoint;
 	struct rockchip_dp_device *dp;
 	struct drm_panel *panel;
 
+#if 0
 	port = of_graph_get_port_by_id(dev->of_node, 1);
 	if (!port) {
 		dev_err(dev, "can't find output port\n");
@@ -320,6 +320,9 @@ static int rockchip_dp_probe(struct platform_device *pdev)
 	}
 
 	of_node_put(panel_node);
+#endif
+
+	panel = NULL;
 
 	dp = devm_kzalloc(dev, sizeof(*dp), GFP_KERNEL);
 	if (!dp)
