@@ -67,6 +67,10 @@
 	};
 };
 
+&edp {
+	status = "okay";
+};
+
 &vopb {
 	status = "okay";
 };
