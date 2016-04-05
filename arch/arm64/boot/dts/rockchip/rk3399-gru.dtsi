@@ -981,7 +981,30 @@ ap_i2c_audio: &i2c8 {
 	};
 };
 
-/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
-/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
-/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
+&edp {
+	status = "okay";
+};
 
+&vopb {
+	status = "okay";
+};
+
+&vopb_mmu {
+	status = "okay";
+};
+
+&vopl {
+	status = "okay";
+};
+
+&vopl_mmu {
+	status = "okay";
+};
+
+&display_subsystem {
+	status = "okay";
+};
+
+/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
+/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
+/* DON'T PUT ANYTHING BELOW HERE.  PUT IT ABOVE PINCTRL */
