@@ -710,7 +710,7 @@ ap_i2c_audio: &i2c8 {
 
 	// HACK: Limit freq for now
 	// ...as of 160330 confirmed that things break if you remove this.
-	clock-frequency = <37500000>;
+	clock-frequency = <400000>;
 	clock-freq-min-max = <400000 37500000>;
 
 	bus-width = <4>;
@@ -990,14 +990,6 @@ ap_i2c_audio: &i2c8 {
 };
 
 &vopb_mmu {
-	status = "okay";
-};
-
-&vopl {
-	status = "okay";
-};
-
-&vopl_mmu {
 	status = "okay";
 };
 
