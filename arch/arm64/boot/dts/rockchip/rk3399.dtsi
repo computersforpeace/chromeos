@@ -878,6 +878,9 @@
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 		assigned-clocks =
+			<&cru DCLK_VOP0_DIV>, <&cru DCLK_VOP1_DIV>,
+			<&cru ACLK_VOP0>, <&cru HCLK_VOP0>,
+			<&cru ACLK_VOP1>, <&cru HCLK_VOP1>,
 			<&cru ARMCLKL>, <&cru ARMCLKB>,
 			<&cru PLL_GPLL>, <&cru PLL_CPLL>,
 			<&cru PLL_NPLL>,
@@ -886,7 +889,12 @@
 			<&cru ACLK_PERILP0>, <&cru HCLK_PERILP0>,
 			<&cru PCLK_PERILP0>,
 			<&cru HCLK_PERILP1>, <&cru PCLK_PERILP1>;
+		assigned-clock-parents =
+			<&cru PLL_VPLL>, <&cru PLL_CPLL>;
 		assigned-clock-rates =
+			<1188000000>,	       <0>,
+			 <400000000>,  <200000000>,
+			 <400000000>,  <200000000>,
 			 <816000000>, <1008000000>,
 			 <594000000>,  <800000000>,
 			<1000000000>,
