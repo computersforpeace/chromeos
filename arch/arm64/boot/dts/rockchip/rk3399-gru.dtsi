@@ -798,7 +798,7 @@ ap_i2c_audio: &i2c8 {
 		google,cros-ec-spi-pre-delay = <30>;	// TODO: check
 		interrupt-parent = <&gpio0>;
 		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
-		spi-max-frequency = <3000000>;		// TODO: check; TODO: rx-sample-delay-ns?
+		spi-max-frequency = <100000>;		// TODO: check; TODO: rx-sample-delay-ns?
 
 		i2c_tunnel: i2c-tunnel {
 			compatible = "google,cros-ec-i2c-tunnel";
