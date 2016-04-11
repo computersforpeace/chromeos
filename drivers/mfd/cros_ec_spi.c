@@ -13,6 +13,8 @@
  * GNU General Public License for more details.
  */
 
+#define DEBUG
+
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -57,7 +59,7 @@
  * wait loop.  The 'flash write' command would be another candidate
  * for this, clocking in at 2-3ms.
  */
-#define EC_MSG_DEADLINE_MS		200
+#define EC_MSG_DEADLINE_MS		2000
 
 /*
   * Time between raising the SPI chip select (for the end of a
