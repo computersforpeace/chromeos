@@ -670,7 +670,7 @@ ap_i2c_audio: &i2c8 {
 };
 
 &sdhci {
-	status = "okay";
+	//status = "okay";
 
 	// HACK: supports-emmc is not mainline.
 	supports-emmc;
@@ -733,7 +733,7 @@ ap_i2c_audio: &i2c8 {
 };
 
 &spi0 {
-	status = "okay";
+	//status = "okay";
 
 	// TODO: more properly.  Hacky spidev for now???
 	// A few notes:
@@ -749,7 +749,7 @@ ap_i2c_audio: &i2c8 {
 	//   track when we last talked and adding an extra delay if it's been
 	//   a while).
 	tpm@0 {
-		compatible = "spidev";
+		//compatible = "spidev";
 		// TODO: can run faster once verified.
 		// TODO: add rx-sample-delay-ns.
 		spi-max-frequency = <10000000>;
@@ -773,11 +773,11 @@ ap_i2c_audio: &i2c8 {
 };
 
 &spi2 {
-	status = "okay";
+	//status = "okay";
 
 	// TODO: more properly.  Hacky spidev for now???
 	wacky_spi_audio@0 {
-		compatible = "spidev";
+		//compatible = "spidev";
 
 		// TODO: can run faster once verified.
 		// TODO: add rx-sample-delay-ns.
@@ -795,7 +795,7 @@ ap_i2c_audio: &i2c8 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&ec_ap_int_l>;
 
-		google,cros-ec-spi-pre-delay = <30>;	// TODO: check
+		//google,cros-ec-spi-pre-delay = <30>;	// TODO: check
 		interrupt-parent = <&gpio0>;
 		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
 		spi-max-frequency = <3000000>;		// TODO: check; TODO: rx-sample-delay-ns?

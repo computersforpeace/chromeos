@@ -131,6 +131,23 @@ static int terminate_request(struct cros_ec_device *ec_dev)
 	return ret;
 }
 
+static void __dump_transfer(struct spi_transfer *trans, const char *caller)
+{
+	pr_info("%s: TX:\n", caller);
+	if (trans->tx_buf)
+		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_OFFSET, 16, 1,
+				trans->tx_buf, trans->len, true);
+	else
+		pr_info("(NULL)\n");
+	pr_info("%s: RX:\n", caller);
+	if (trans->rx_buf)
+		print_hex_dump(KERN_INFO, "", DUMP_PREFIX_OFFSET, 16, 1,
+				trans->rx_buf, trans->len, true);
+	else
+		pr_info("(NULL)\n");
+}
+#define dump_transfer(trans) __dump_transfer((trans), __func__)
+
 /**
  * receive_n_bytes - receive n bytes from the EC.
  *
@@ -155,6 +172,7 @@ static int receive_n_bytes(struct cros_ec_device *ec_dev, u8 *buf, int n)
 	ret = spi_sync_locked(ec_spi->spi, &msg);
 	if (ret < 0)
 		dev_err(ec_dev->dev, "spi transfer failed: %d\n", ret);
+	dump_transfer(&trans);
 
 	return ret;
 }
@@ -420,6 +438,7 @@ static int cros_ec_pkt_xfer_spi(struct cros_ec_device *ec_dev,
 	trans.cs_change = 1;
 	spi_message_add_tail(&trans, &msg);
 	ret = spi_sync_locked(ec_spi->spi, &msg);
+	dump_transfer(&trans);
 
 	/* Get the response */
 	if (!ret) {

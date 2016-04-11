@@ -270,6 +270,8 @@ static void rockchip_spi_set_cs(struct spi_device *spi, bool enable)
 
 	pm_runtime_get_sync(rs->dev);
 
+	dev_info(&spi->dev, "set CS: %s\n", enable ? "on": "off");
+
 	ser = readl_relaxed(rs->regs + ROCKCHIP_SPI_SER) & SER_MASK;
 
 	/*
