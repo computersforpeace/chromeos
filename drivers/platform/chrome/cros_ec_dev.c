@@ -197,17 +197,27 @@ static long ec_device_ioctl(struct file *filp, unsigned int cmd,
 			    unsigned long arg)
 {
 	struct cros_ec_dev *ec = filp->private_data;
+	long ret;
+
+	pr_info("%s: line %d\n", __func__, __LINE__);
 
 	if (_IOC_TYPE(cmd) != CROS_EC_DEV_IOC)
 		return -ENOTTY;
+	pr_info("%s: line %d\n", __func__, __LINE__);
 
 	switch (cmd) {
 	case CROS_EC_DEV_IOCXCMD:
-		return ec_device_ioctl_xcmd(ec, (void __user *)arg);
+		ret = ec_device_ioctl_xcmd(ec, (void __user *)arg);
+		pr_info("CROS_EC_DEV_IOCXCMD returned: %ld\n", ret);
+		return ret;
 	case CROS_EC_DEV_IOCRDMEM:
-		return ec_device_ioctl_readmem(ec, (void __user *)arg);
+		ret = ec_device_ioctl_readmem(ec, (void __user *)arg);
+		pr_info("CROS_EC_DEV_IOCRDMEM returned: %ld\n", ret);
+		return ret;
 	}
 
+	pr_info("%s: line %d\n", __func__, __LINE__);
+	pr_info("ioctl not found, returning -ENOTTY\n");
 	return -ENOTTY;
 }
 

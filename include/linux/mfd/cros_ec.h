@@ -75,7 +75,7 @@ struct cros_ec_command {
 	uint32_t insize;
 	uint32_t result;
 	uint8_t data[0];
-};
+} __packed;
 
 /*
  * event_data is used by keyboard or event notifier:
