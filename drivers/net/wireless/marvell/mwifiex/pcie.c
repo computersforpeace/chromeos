@@ -102,10 +102,6 @@ static int mwifiex_pcie_suspend(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 
 	card = pci_get_drvdata(pdev);
-	if (!card) {
-		dev_err(dev, "adapter structure is not valid\n");
-		return 0;
-	}
 
 	/* Might still be loading firmware */
 	wait_for_completion(&card->fw_done);
@@ -148,8 +144,9 @@ static int mwifiex_pcie_resume(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 
 	card = pci_get_drvdata(pdev);
-	if (!card || !card->adapter) {
-		dev_err(dev, "Card or adapter structure is not valid\n");
+
+	if (!card->adapter) {
+		dev_err(dev, "adapter structure is not valid\n");
 		return 0;
 	}
 
@@ -222,8 +219,6 @@ static void mwifiex_pcie_remove(struct pci_dev *pdev)
 	struct mwifiex_private *priv;
 
 	card = pci_get_drvdata(pdev);
-	if (!card)
-		return;
 
 	wait_for_completion(&card->fw_done);
 
@@ -2211,7 +2206,8 @@ static irqreturn_t mwifiex_pcie_interrupt(int irq, void *context)
 	}
 
 	card = pci_get_drvdata(pdev);
-	if (!card || !card->adapter) {
+
+	if (!card->adapter) {
 		pr_err("info: %s: card=%p adapter=%p\n", __func__, card,
 		       card ? card->adapter : NULL);
 		goto exit;
