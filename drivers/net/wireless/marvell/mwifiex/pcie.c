@@ -35,8 +35,6 @@ static u8 user_rmmod;
 
 static struct mwifiex_if_ops pcie_ops;
 
-static struct semaphore add_remove_card_sem;
-
 static int
 mwifiex_map_pci_memory(struct mwifiex_adapter *adapter, struct sk_buff *skb,
 		       size_t size, int flags)
@@ -193,6 +191,8 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
 	if (!card)
 		return -ENOMEM;
 
+	init_completion(&card->fw_done);
+
 	card->dev = pdev;
 
 	if (ent->driver_data) {
@@ -206,7 +206,7 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
 		card->pcie.can_ext_scan = data->can_ext_scan;
 	}
 
-	if (mwifiex_add_card(card, &add_remove_card_sem, &pcie_ops,
+	if (mwifiex_add_card(card, &card->fw_done, &pcie_ops,
 			     MWIFIEX_PCIE)) {
 		pr_err("%s failed\n", __func__);
 		return -1;
@@ -228,6 +228,8 @@ static void mwifiex_pcie_remove(struct pci_dev *pdev)
 	if (!card)
 		return;
 
+	wait_for_completion(&card->fw_done);
+
 	adapter = card->adapter;
 	if (!adapter || !adapter->priv_num)
 		return;
@@ -247,7 +249,7 @@ static void mwifiex_pcie_remove(struct pci_dev *pdev)
 		mwifiex_init_shutdown_fw(priv, MWIFIEX_FUNC_SHUTDOWN);
 	}
 
-	mwifiex_remove_card(card->adapter, &add_remove_card_sem);
+	mwifiex_remove_card(adapter);
 }
 
 static void mwifiex_pcie_shutdown(struct pci_dev *pdev)
@@ -3146,16 +3148,13 @@ static struct mwifiex_if_ops pcie_ops = {
 /*
  * This function initializes the PCIE driver module.
  *
- * This initiates the semaphore and registers the device with
- * PCIE bus.
+ * This registers the device with PCIE bus.
  */
 static int mwifiex_pcie_init_module(void)
 {
 	int ret;
 
 	pr_debug("Marvell PCIe Driver\n");
-
-	sema_init(&add_remove_card_sem, 1);
 
 	/* Clear the flag in case user removes the card. */
 	user_rmmod = 0;
@@ -3180,9 +3179,6 @@ static int mwifiex_pcie_init_module(void)
  */
 static void mwifiex_pcie_cleanup_module(void)
 {
-	if (!down_interruptible(&add_remove_card_sem))
-		up(&add_remove_card_sem);
-
 	/* Set the flag as user is removing this module. */
 	user_rmmod = 1;
 
